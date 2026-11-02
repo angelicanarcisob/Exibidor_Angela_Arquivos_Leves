@@ -1,0 +1,19 @@
+CONVITE ANGELA - EXIBIDOR INTERATIVO
+
+COMO ABRIR NO WINDOWS
+1. Extraia o arquivo ZIP para uma pasta.
+2. Dê dois cliques em ABRIR_CONVITE.bat.
+3. O convite será aberto no navegador.
+4. Clique em "Configurar links dos botões", preencha os quatro endereços e clique em "Salvar links".
+5. Reproduza o vídeo. Quando chegar à tela final com os quatro botões, clique nos ícones.
+
+REQUISITOS
+- Windows com Python instalado e disponível pelo comando "py".
+- Não precisa instalar Flask nem outras bibliotecas.
+
+IMPORTANTE
+- O vídeo está incluído na pasta como convite.mp4.
+- O início da área clicável está configurado para aproximadamente 33,8 segundos.
+- Os links ficam salvos no navegador usado para configurar.
+- Para compartilhar com convidados pela internet, será necessário publicar os arquivos em uma hospedagem de site.
+- Os endereços dos botões devem começar com https:// ou http://.
