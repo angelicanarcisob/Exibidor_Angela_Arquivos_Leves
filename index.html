@@ -48,7 +48,7 @@ button.action { border:1px solid #9fb5d0; border-radius:8px; padding:10px 13px; 
     <summary>⚙ Configurar links dos botões</summary>
     <div class="fields">
       <label>Dress Code — link da página ou imagem<input id="dressUrl" type="url" placeholder="https://..."></label>
-      <label>Local — link do Google Maps<input id="localUrl" type="url" placeholder="https://maps.app.goo.gl/qyHCaBoDs7pF4BPi7"></label>
+      <label>Local — link do Google Maps<input id="localUrl" type="url" placeholder="https://maps.app.goo.gl/..."></label>
       <label>Confirmar presença — formulário ou WhatsApp<input id="confirmUrl" type="url" placeholder="https://wa.me/55..."></label>
       <label>Sugestões de presente — lista ou página<input id="giftUrl" type="url" placeholder="https://..."></label>
     </div>
@@ -75,15 +75,15 @@ hint.hidden = !adminMode;
 
 // Insira aqui os links definitivos. Assim, todos os convidados recebem os mesmos destinos.
 const PUBLIC_LINKS = {
-  dress: "",
-  local: "",
-  confirm: "",
-  gift: ""
+  dress: "", // informe aqui o link do Dress Code quando tiver
+  local: "https://maps.app.goo.gl/qyHCaBoDs7pF4BPi7",
+  confirm: "https://wa.me/553788158539",
+  gift: "" // informe aqui o link de sugestões de presente quando tiver
 };
 
 function loadLinks() {
   fields.forEach((field,i) => {
-    const value = PUBLIC_LINKS[ids[i]] || localStorage.getItem("angela_"+ids[i]) || "";
+    const value = PUBLIC_LINKS[ids[i]] || (adminMode ? localStorage.getItem("angela_"+ids[i]) : "") || "";
     document.getElementById(field).value = value;
     document.getElementById(ids[i]).href = value || "#";
   });
