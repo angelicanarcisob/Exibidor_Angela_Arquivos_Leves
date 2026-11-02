@@ -43,30 +43,21 @@ button.action { border:1px solid #9fb5d0; border-radius:8px; padding:10px 13px; 
     <a class="hotspot" id="confirm" href="#" target="_blank" rel="noopener" aria-label="Confirmar presença" title="Confirmar presença"></a>
     <a class="hotspot" id="gift" href="#" target="_blank" rel="noopener" aria-label="Sugestões de presente" title="Sugestões de presente"></a>
   </div>
-  <p class="hint" id="hint">Os links ficam ativos quando a tela final com os quatro botões aparecer.</p>
-
-  <details>
+  <p class="hint" id="hint" hidden>Os links ficam ativos quando a tela final com os quatro botões aparecer.</p>
+  <details id="configPanel" hidden>
     <summary>⚙ Configurar links dos botões</summary>
     <div class="fields">
-      <label>Dress Code — link da página ou imagem
-        <input id="dressUrl" type="url" placeholder="https://...">
-      </label>
-      <label>Local — link do Google Maps
-        <input id="localUrl" type="url" placeholder="https://maps.app.goo.gl/...">
-      </label>
-      <label>Confirmar presença — formulário ou WhatsApp
-        <input id="confirmUrl" type="url" placeholder="https://wa.me/55...">
-      </label>
-      <label>Sugestões de presente — lista ou página
-        <input id="giftUrl" type="url" placeholder="https://...">
-      </label>
+      <label>Dress Code — link da página ou imagem<input id="dressUrl" type="url" placeholder="https://..."></label>
+      <label>Local — link do Google Maps<input id="localUrl" type="url" placeholder="https://maps.app.goo.gl/..."></label>
+      <label>Confirmar presença — formulário ou WhatsApp<input id="confirmUrl" type="url" placeholder="https://wa.me/55..."></label>
+      <label>Sugestões de presente — lista ou página<input id="giftUrl" type="url" placeholder="https://..."></label>
     </div>
     <div class="actions">
       <button class="action" id="save">Salvar links</button>
       <button class="action" id="test">Testar botões</button>
       <button class="action" id="clear">Limpar</button>
     </div>
-    <p class="note">Os endereços são guardados neste navegador. Para publicar o convite e compartilhar com os convidados, hospede esta pasta em um site. Os botões são áreas transparentes posicionadas sobre os ícones originais do vídeo.</p>
+    <p class="note">Para que os links funcionem para todos os convidados, preencha PUBLIC_LINKS no código antes de publicar. O salvamento abaixo é apenas local, neste navegador.</p>
   </details>
 </main>
 <script>
@@ -75,11 +66,24 @@ const fields = ["dressUrl","localUrl","confirmUrl","giftUrl"];
 const player = document.getElementById("player");
 const video = document.getElementById("video");
 const hint = document.getElementById("hint");
-const FINAL_SCREEN_AT = 33.8; // segundos: início aproximado da tela final com os botões
+const FINAL_SCREEN_AT = 33.8;
+
+// Painel e instruções só aparecem quando o proprietário acessa com ?editar=1
+const adminMode = new URLSearchParams(window.location.search).get("editar") === "1";
+document.getElementById("configPanel").hidden = !adminMode;
+hint.hidden = !adminMode;
+
+// Insira aqui os links definitivos. Assim, todos os convidados recebem os mesmos destinos.
+const PUBLIC_LINKS = {
+  dress: "",
+  local: "",
+  confirm: "",
+  gift: ""
+};
 
 function loadLinks() {
   fields.forEach((field,i) => {
-    const value = localStorage.getItem("angela_"+ids[i]) || "";
+    const value = PUBLIC_LINKS[ids[i]] || localStorage.getItem("angela_"+ids[i]) || "";
     document.getElementById(field).value = value;
     document.getElementById(ids[i]).href = value || "#";
   });
@@ -87,9 +91,11 @@ function loadLinks() {
 function updateOverlay() {
   const active = video.currentTime >= FINAL_SCREEN_AT || video.ended;
   player.classList.toggle("active", active);
-  hint.textContent = active
-    ? "Clique diretamente sobre um dos quatro botões do convite."
-    : "Os links ficam ativos quando a tela final com os quatro botões aparecer.";
+  if (adminMode) {
+    hint.textContent = active
+      ? "Clique diretamente sobre um dos quatro botões do convite."
+      : "Os links ficam ativos quando a tela final com os quatro botões aparecer.";
+  }
 }
 document.getElementById("save").addEventListener("click", () => {
   fields.forEach((field,i) => {
@@ -97,7 +103,7 @@ document.getElementById("save").addEventListener("click", () => {
     localStorage.setItem("angela_"+ids[i], value);
     document.getElementById(ids[i]).href = value || "#";
   });
-  alert("Links salvos neste navegador!");
+  alert("Links salvos neste navegador. Para compartilhar com os convidados, copie os endereços para PUBLIC_LINKS no código e publique novamente.");
 });
 document.getElementById("test").addEventListener("click", () => {
   player.classList.add("active");
@@ -107,12 +113,12 @@ document.getElementById("clear").addEventListener("click", () => {
   fields.forEach((field,i) => {
     localStorage.removeItem("angela_"+ids[i]);
     document.getElementById(field).value = "";
-    document.getElementById(ids[i]).href = "#";
+    document.getElementById(ids[i]).href = PUBLIC_LINKS[ids[i]] || "#";
   });
 });
 ids.forEach(id => document.getElementById(id).addEventListener("click", e => {
   if (!document.getElementById(id).href || document.getElementById(id).getAttribute("href") === "#") {
-    e.preventDefault(); alert("Configure primeiro o link deste botão.");
+    e.preventDefault(); alert("Este botão ainda não tem um link configurado.");
   }
 }));
 video.addEventListener("timeupdate", updateOverlay);
